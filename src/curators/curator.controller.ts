@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   ParseArrayPipe,
   UseGuards,
+  Get,
 } from '@nestjs/common';
 import { CuratorService } from './curator.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
@@ -28,5 +29,14 @@ export class CuratorController {
     groupIds: number[],
   ) {
     return this.curatorService.assignGroups(curatorId, groupIds);
+  }
+
+  @Get('grades/groups/:groupId/subjects/:subjectId')
+  @Roles('admin', 'curator')
+  getAllGrades(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Param('subjectId', ParseIntPipe) subjectId: number,
+  ) {
+    return this.curatorService.getAllGrades(groupId, subjectId);
   }
 }

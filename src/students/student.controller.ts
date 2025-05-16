@@ -28,14 +28,15 @@ export class StudentController {
   @Roles('admin', 'curator')
   create(@Body() dto: CreateStudentDto, @Req() req: AuthRequest) {
     if (
-      req.user.role === 'curator' &&
-      dto.groupId !== req.user.id
+      req.user.role === 'curator' || req.user.role ==='admin'
     ) {
+      return this.service.create(dto);
+
+    } else {
       throw new ForbiddenException(
         'Можно добавлять студентов только в свои группы',
       );
     }
-    return this.service.create(dto);
   }
 
   @Get()
@@ -45,7 +46,7 @@ export class StudentController {
       return this.service.findAll();
     }
     // curator: все студенты его групп
-    return this.service.findByCurator(req.user.id);
+    return this.service.findByCurator(req.user.userId);
   }
 
   @Get(':id')
@@ -57,7 +58,7 @@ export class StudentController {
     const student = await this.service.findOne(id);
     if (
       req.user.role === 'curator' &&
-      student.group.curatorId !== req.user.id
+      student.group.curatorId !== req.user.userId
     ) {
       throw new ForbiddenException('Доступ запрещён');
     }
@@ -74,7 +75,7 @@ export class StudentController {
     const student = await this.service.findOne(id);
     if (
       req.user.role === 'curator' &&
-      student.group.curatorId !== req.user.id
+      student.group.curatorId !== req.user.userId
     ) {
       throw new ForbiddenException('Доступ запрещён');
     }
@@ -90,7 +91,7 @@ export class StudentController {
     const student = await this.service.findOne(id);
     if (
       req.user.role === 'curator' &&
-      student.group.curatorId !== req.user.id
+      student.group.curatorId !== req.user.userId
     ) {
       throw new ForbiddenException('Доступ запрещён');
     }

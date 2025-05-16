@@ -4,7 +4,4 @@ export class CreateSubjectDto {
   @IsString()
   @IsNotEmpty()
   name: string;
-
-  @IsInt()
-  programId: number;
 }

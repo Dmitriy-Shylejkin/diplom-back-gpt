@@ -17,9 +17,12 @@ import { ReportsModule } from './reports/reports.module';
 
 import { JwtAuthGuard } from './auth/jwt.guard';
 import { RolesGuard }   from './auth/roles.guard';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { mailerConfig } from './email/mail.config';
 
 @Module({
   imports: [
+    MailerModule.forRoot(mailerConfig),
     ConfigModule.forRoot({ isGlobal: true }),
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
@@ -47,9 +50,6 @@ import { RolesGuard }   from './auth/roles.guard';
     EmailModule,
     ReportsModule,
   ],
-  providers: [
-    { provide: APP_GUARD, useClass: JwtAuthGuard },
-    { provide: APP_GUARD, useClass: RolesGuard },
-  ],
+  providers: [],
 })
 export class AppModule {}

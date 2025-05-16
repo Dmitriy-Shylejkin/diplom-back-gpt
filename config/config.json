@@ -3,7 +3,8 @@
     "username": "postgres",
     "password": "root",
     "database": "curator_system",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
+    "host": "localhost",
+    "dialect": "postgres",
+    "port": 5433
   }
 }

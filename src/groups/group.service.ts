@@ -15,8 +15,17 @@ export class GroupService {
     return this.groupRepo.create(dto);
   }
 
-  async findAll() {
-    return this.groupRepo.findAll();
+  async findAll(user) {
+    if (user.role === "admin") {
+      return this.groupRepo.findAll({
+      });
+    } else if (user.role === "curator") {
+      return this.groupRepo.findAll({
+        where: { curatorId: user.userId },
+      });
+    }
+
+    return [];
   }
 
   async findOne(id: number) {

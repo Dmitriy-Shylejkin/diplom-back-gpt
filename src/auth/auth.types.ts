@@ -1,7 +1,7 @@
 import { Request } from 'express';
 
 export interface JwtPayloadExtended {
-  id: number;
+  userId: number;
   email: string;
   role: 'admin' | 'curator';
   iat?: number;

@@ -11,13 +11,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      programId: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: { model: 'programs', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
-      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

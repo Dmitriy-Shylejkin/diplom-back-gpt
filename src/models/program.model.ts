@@ -1,3 +1,4 @@
+// src/models/program.model.ts
 import {
   Table,
   Column,
@@ -6,12 +7,15 @@ import {
   ForeignKey,
   BelongsTo,
   HasMany,
+  BelongsToMany,
 } from 'sequelize-typescript';
 import { Faculty } from './faculty.model';
 import { Group } from './group.model';
+import { Subject } from './subject.model';
+import { ProgramSubject } from './program-subject.model';
 
 @Table({
-  tableName: 'programs',   // совпадает с миграцией
+  tableName: 'programs',
   timestamps: true,
 })
 export class Program extends Model<Program> {
@@ -39,10 +43,13 @@ export class Program extends Model<Program> {
     type: DataType.STRING,
     allowNull: true,
   })
-  declare shortName: string;
+  declare shortName: string | null;
 
   @ForeignKey(() => Faculty)
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  @Column({ 
+    type: DataType.INTEGER, 
+    allowNull: false 
+  })
   declare facultyId: number;
 
   @BelongsTo(() => Faculty)
@@ -50,4 +57,7 @@ export class Program extends Model<Program> {
 
   @HasMany(() => Group)
   declare groups: Group[];
+
+  @BelongsToMany(() => Subject, () => ProgramSubject)
+  declare subjects: Subject[];
 }

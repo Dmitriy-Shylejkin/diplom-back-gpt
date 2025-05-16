@@ -1,3 +1,4 @@
+// src/models/subject.model.ts
 import {
   Table,
   Column,
@@ -6,12 +7,17 @@ import {
   ForeignKey,
   BelongsTo,
   HasMany,
+  BelongsToMany,
 } from 'sequelize-typescript';
 import { Program } from './program.model';
 import { Grade } from './grade.model';
+import { ProgramSubject } from './program-subject.model';
 
-@Table({ tableName: 'subjects', timestamps: true })
-export class Subject extends Model<Subject, { name: string; programId?: number }> {
+@Table({ 
+  tableName: 'subjects',
+  timestamps: true,
+})
+export class Subject extends Model {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
@@ -19,16 +25,15 @@ export class Subject extends Model<Subject, { name: string; programId?: number }
   })
   declare id: number;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ 
+    type: DataType.STRING, 
+    allowNull: false 
+  })
   declare name: string;
-
-  @ForeignKey(() => Program)
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  declare programId: number;
-
-  @BelongsTo(() => Program)
-  declare program: Program;
 
   @HasMany(() => Grade)
   declare grades: Grade[];
+
+  @BelongsToMany(() => Program, () => ProgramSubject)
+  declare programs: Program[];
 }

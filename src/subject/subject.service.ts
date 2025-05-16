@@ -7,6 +7,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Subject } from '../models/subject.model';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
+import { Program } from 'src/models/program.model';
+import { ProgramSubject } from 'src/models/program-subject.model';
 
 @Injectable()
 export class SubjectService {
@@ -15,24 +17,17 @@ export class SubjectService {
   ) {}
 
   async create(dto: CreateSubjectDto) {
-    const d = dto as any;
-    const exists = await this.model.findOne({
-      where: { code: d.code, programId: d.programId } as any,
-    });
-    if (exists) {
-      throw new ConflictException(
-        `Subject "${d.code}" already exists in program ${d.programId}`,
-      );
-    }
-    return this.model.create(d);
+    const subject = await this.model.create({ name: dto.name });
+    
+    return this.findOne(subject.id); 
   }
 
   findAll() {
-    return this.model.findAll({ include: ['program'] });
+    return this.model.findAll();
   }
 
   async findOne(id: number) {
-    const item = await this.model.findByPk(id, { include: ['program'] });
+    const item = await this.model.findByPk(id);
     if (!item) {
       throw new NotFoundException(`Subject with id ${id} not found`);
     }
@@ -41,7 +36,7 @@ export class SubjectService {
 
   async update(id: number, dto: UpdateSubjectDto) {
     const item = await this.findOne(id);
-    return item.update(dto as any);
+    return item.update({ name: dto.name });
   }
 
   async remove(id: number) {

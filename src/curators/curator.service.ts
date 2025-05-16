@@ -6,12 +6,15 @@ import {
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../models/user.model';
 import { Group } from '../models/group.model';
+import { Student } from 'src/models/student.model';
+import { Grade } from 'src/models/grade.model';
 
 @Injectable()
 export class CuratorService {
   constructor(
     @InjectModel(User) private readonly userModel: typeof User,
     @InjectModel(Group) private readonly groupModel: typeof Group,
+    @InjectModel(Student) private readonly studentModel: typeof Student,
   ) {}
 
   /**
@@ -53,5 +56,31 @@ export class CuratorService {
 
     // 4) Возвращаем обновлённые группы
     return this.groupModel.findAll({ where: { id: groupIds } });
+  }
+
+  async getAllGrades(groupId: number, subjectId: number) {
+    const students = await this.studentModel.findAll({
+      where: { groupId },
+      include: {
+        model: Grade,
+        where: { subjectId },
+        required: false
+      }
+    });
+
+    const result = students.map(student => {
+      const studentData = student.get({ plain: true });
+      const gradeData = studentData.Grades && studentData.Grades.length > 0 ? studentData.Grades[0].grade : null;
+
+      return {
+        studentId: studentData.id,
+        fullName: studentData.fullName,
+        email: studentData.email,
+        phone: studentData.phone,
+        grade: gradeData,
+      }
+
+    })
+    return result;
   }
 }
