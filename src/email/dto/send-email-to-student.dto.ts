@@ -11,7 +11,6 @@ export class SendEmailToStudentDto {
   @IsIn(EmailTemplateKeys)
   templateKey: EmailTemplateKey;
 
-
   @IsObject()
   @ValidateNested()
   @Type(() => ContextDto)

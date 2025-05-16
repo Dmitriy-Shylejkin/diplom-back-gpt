@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   UseGuards,
   Req,
+  Query
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -30,8 +31,11 @@ export class GroupController {
 
   @Get()
   @Roles('admin', 'curator')
-  findAll(@Req() req) {
-    return this.svc.findAll(req.user);
+  findAll(
+    @Req() req, 
+    @Query() query: { programId?: number; curatorId?: number }
+  ) {
+    return this.svc.findAll(req.user, query.programId, query.curatorId);
   }
 
   @Get(':id')

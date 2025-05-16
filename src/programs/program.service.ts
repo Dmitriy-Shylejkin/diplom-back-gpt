@@ -71,8 +71,8 @@ export class ProgramService {
     );
   }
 
-  async findAll() {
-    return this.programModel.findAll({
+  async findAll(id?: number) {
+    const options: any = {
       include: [
         'faculty',
         {
@@ -80,7 +80,13 @@ export class ProgramService {
           through: { attributes: [] }, // Скрываем промежуточную таблицу
         },
       ],
-    });
+    };
+
+    if (id) {
+      options.where = { id };
+    }
+
+    return this.programModel.findAll(options);
   }
 
   async findOne(id: number) {

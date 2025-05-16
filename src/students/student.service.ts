@@ -25,8 +25,15 @@ export class StudentService {
     return this.model.create(d);
   }
 
-  findAll() {
-    return this.model.findAll({ include: ['group'] });
+  findAll(groupId) {
+    const options: any = {
+      include: ['group'] 
+    }
+
+    if (groupId) {
+      options.where = { groupId }
+    }
+    return this.model.findAll(options);
   }
 
   async findByCurator(curatorId: number) {

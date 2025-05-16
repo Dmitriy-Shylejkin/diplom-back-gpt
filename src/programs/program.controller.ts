@@ -8,6 +8,7 @@ import {
   Body,
   ParseIntPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ProgramService } from './program.service';
 import { CreateProgramDto } from './dto/create-program.dto';
@@ -28,6 +29,7 @@ export class ProgramController {
   ) {}
 
   
+
   @Post()
   @Roles('admin')
   create(@Body() dto: CreateProgramDto) {
@@ -36,8 +38,8 @@ export class ProgramController {
 
   @Get()
   @Roles('admin', 'curator')
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query('id') id?: number) {
+    return this.service.findAll(id);
   }
 
   @Get(':id')

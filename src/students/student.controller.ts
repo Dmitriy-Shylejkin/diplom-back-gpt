@@ -10,6 +10,7 @@ import {
   Req,
   UseGuards,
   ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -41,9 +42,12 @@ export class StudentController {
 
   @Get()
   @Roles('admin', 'curator')
-  findAll(@Req() req: AuthRequest) {
+  findAll(
+    @Req() req: AuthRequest,
+    @Query('groupId') groupId?: number
+  ) {
     if (req.user.role === 'admin') {
-      return this.service.findAll();
+      return this.service.findAll(groupId);
     }
     // curator: все студенты его групп
     return this.service.findByCurator(req.user.userId);

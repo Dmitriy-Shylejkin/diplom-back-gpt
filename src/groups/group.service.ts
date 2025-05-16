@@ -15,14 +15,22 @@ export class GroupService {
     return this.groupRepo.create(dto);
   }
 
-  async findAll(user) {
+  async findAll(user, programId?: number, curatorId?: number) {
     if (user.role === "admin") {
       return this.groupRepo.findAll({
       });
     } else if (user.role === "curator") {
-      return this.groupRepo.findAll({
-        where: { curatorId: user.userId },
-      });
+      const options: any = { curatorId: user.userId };
+
+      if (programId) {
+        options.where = { ...options.where, programId };
+      }
+
+      if (curatorId) {
+        options.where = { ...options.where, curatorId };
+      }
+      
+      return this.groupRepo.findAll(options);
     }
 
     return [];
