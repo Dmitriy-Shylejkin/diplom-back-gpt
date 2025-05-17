@@ -7,17 +7,30 @@ import {
   ParseArrayPipe,
   UseGuards,
   Get,
-  Res
+  Res,
+  Patch,
+  Put,
+  Req,
+  ForbiddenException,
+  Delete
 } from '@nestjs/common';
 import { CuratorService } from './curator.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { CreateCuratorDto } from './dto/create-curator.dto';
+import { AuthRequest } from 'src/auth/auth.types';
 
 @Controller('curators')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CuratorController {
   constructor(private readonly curatorService: CuratorService) {}
+
+  @Post()
+  @Roles('admin')
+  async createCurator(@Body() dto: CreateCuratorDto) {
+    return this.curatorService.create(dto)
+  }
 
   @Get('report/:id')
   @Roles('admin', 'curator')
@@ -38,17 +51,15 @@ export class CuratorController {
   await this.curatorService.generateGroupSubjectReport(groupId, subjectId, res);
   }
 
-  @Post(':id/groups')
+  @Patch('groups/:id')
   @Roles('admin')
   assignGroups(
     @Param('id', ParseIntPipe) curatorId: number,
-    @Body(
-      'groupIds',
-      new ParseArrayPipe({ items: Number, separator: ',' }),
-    )
-    groupIds: number[],
+    @Body('groupId')
+    groupId: number,
   ) {
-    return this.curatorService.assignGroups(curatorId, groupIds);
+    console.log('groupId', groupId)
+    return this.curatorService.assignGroups(curatorId, groupId);
   }
 
   @Get('grades/groups/:groupId/subjects/:subjectId')
@@ -66,5 +77,39 @@ export class CuratorController {
     @Param('id', ParseIntPipe) studentId: number
   ) {
     return this.curatorService.getAllGradesForStudent(studentId);
+  }
+
+  @Get('/all-curators')
+  @Roles('admin')
+  getAllCurators() {
+    return this.curatorService.findAll()
+  }
+
+  @Put(':id')
+  @Roles('admin', 'curator')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: any,
+    @Req() req: AuthRequest,
+  ) {
+    const curator: any = await this.curatorService.findOne(id);
+    if (
+      req.user.role === 'curator' &&
+      curator.id !== req.user.userId
+    ) {
+      console.log('if')
+      throw new ForbiddenException('Доступ запрещён');
+    }
+    return this.curatorService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @Roles('admin')
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthRequest,
+  ) {
+    const curator: any = await this.curatorService.findOne(id);
+    return this.curatorService.remove(id);
   }
 }

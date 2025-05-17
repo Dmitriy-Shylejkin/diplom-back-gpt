@@ -36,12 +36,28 @@ export class GradeService {
   }
 
   async findAllGradeForStudent(studentId: number) {
-    const grades = this.studentModel.findByPk(studentId, {
+    const student: any = await this.studentModel.findByPk(studentId, {
       include: [Grade]
-    })
+    });
 
-    return grades;
-  }
+    const allSubjects = await this.subjectModel.findAll();
+
+    // Преобразуем массив оценок, добавляя subjectName
+    const gradesWithSubjectName = student.Grades.map(grade => {
+      const subject = allSubjects.find(subject => subject.id === grade.subjectId);
+      return {
+        ...grade.toJSON(), // Преобразуем экземпляр модели в обычный объект
+        subjectName: subject ? subject.name : null
+      };
+    });
+
+    const newObj = JSON.parse(JSON.stringify(student))
+
+    newObj.Grades = gradesWithSubjectName
+
+    return newObj;
+}
+
 
   async findOne(id: number) {
     const item = await this.model.findByPk(id, {

@@ -22,7 +22,10 @@ export class StudentService {
     if (!group) {
       throw new ConflictException(`Group with id ${d.groupId} not found`);
     }
-    return this.model.create(d);
+    return this.model.create({
+      ...d,
+      groupId: Number(d.groupId)
+    });
   }
 
   findAll(groupId) {
@@ -48,20 +51,29 @@ export class StudentService {
   }
 
   async findOne(id: number) {
-    const item = await this.model.findByPk(id, { include: ['group'] });
-    if (!item) {
-      throw new NotFoundException(`Student with id ${id} not found`);
+    try {
+      const item = await this.model.findByPk(id, { include: ['group'] });
+      if (!item) {
+        throw new NotFoundException(`Student with id ${id} not found`);
+      }
+      return item;
+    } catch (err) {
+
     }
-    return item;
   }
 
   async update(id: number, dto: UpdateStudentDto) {
-    const item = await this.findOne(id);
-    return item.update(dto as any);
+    try {
+      console.log('here')
+      const item: any = await this.findOne(id);
+      return item.update(dto as any);
+    } catch (err) {
+
+    }
   }
 
   async remove(id: number) {
-    const item = await this.findOne(id);
+    const item: any = await this.findOne(id);
     await item.destroy();
     return { deleted: true };
   }

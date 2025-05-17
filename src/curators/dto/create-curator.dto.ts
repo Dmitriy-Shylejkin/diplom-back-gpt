@@ -12,7 +12,4 @@ export class CreateCuratorDto {
 
   @IsPhoneNumber('RU', { message: 'Неверный формат телефона' })
   phone: string;
-
-  @IsEnum(['admin', 'curator'], { message: 'Роль должна быть admin или curator' })
-  role: 'admin' | 'curator' = 'curator';
 }

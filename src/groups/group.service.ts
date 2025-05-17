@@ -15,10 +15,15 @@ export class GroupService {
     return this.groupRepo.create(dto);
   }
 
-  async findAll(user, programId?: number, curatorId?: number) {
+  async findAll(user, programId?: number) {
     if (user.role === "admin") {
-      return this.groupRepo.findAll({
-      });
+      const obj: any = {}
+      if (programId) {
+        obj.where = {
+          programId
+        }
+      }
+      return this.groupRepo.findAll(obj);
     } else if (user.role === "curator") {
       const options: any = {};
 
@@ -26,10 +31,6 @@ export class GroupService {
 
       if (programId) {
         options.where = { ...options.where, programId };
-      }
-
-      if (curatorId) {
-        options.where = { ...options.where, curatorId };
       }
       
       return this.groupRepo.findAll(options);

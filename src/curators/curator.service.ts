@@ -3,6 +3,8 @@ import {
   HttpException,
   HttpStatus,
   BadRequestException,
+  ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../models/user.model';
@@ -13,6 +15,8 @@ import { Subject } from 'src/models/subject.model';
 import { Workbook } from 'exceljs';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as bcrypt from 'bcrypt';
+import { CreateCuratorDto } from './dto/create-curator.dto';
 
 @Injectable()
 export class CuratorService {
@@ -38,7 +42,8 @@ export class CuratorService {
    * проверяет наличие всех групп (иначе 409),
    * обновляет поле curatorId на всех группах и возвращает их.
    */
-  async assignGroups(curatorId: number, groupIds: number[]) {
+  async assignGroups(curatorId: number, groupId: number) {
+    console.log('fsdfsdfs')
     // 1) Проверяем существование куратора
     const curator = await this.userModel.findOne({
       where: { id: curatorId, role: 'curator' },
@@ -49,16 +54,18 @@ export class CuratorService {
         HttpStatus.CONFLICT,
       );
     }
+    console.log('here')
 
     // 2) Проверяем существование всех групп
     const groups = await this.groupModel.findAll({
-      where: { id: groupIds },
+      // where: { id: groupIds },
     });
+
     const foundIds = groups.map(g => g.id);
-    const missing = groupIds.filter(id => !foundIds.includes(id));
-    if (missing.length) {
+
+    if (!foundIds.includes(groupId)) {
       throw new HttpException(
-        `Groups with ids [${missing.join(', ')}] not found`,
+        `Group with id ${groupId} not found`,
         HttpStatus.CONFLICT,
       );
     }
@@ -66,11 +73,11 @@ export class CuratorService {
     // 3) Обновляем curatorId у всех групп
     await this.groupModel.update(
       { curatorId },
-      { where: { id: groupIds } },
+      { where: { id: groupId } },
     );
 
     // 4) Возвращаем обновлённые группы
-    return this.groupModel.findAll({ where: { id: groupIds } });
+    return this.groupModel.findAll({ where: { id: groupId } });
   }
 
   async getAllGrades(groupId: number, subjectId: number) {
@@ -304,5 +311,60 @@ export class CuratorService {
       console.error('Ошибка генерации отчета:', error);
       throw new BadRequestException('Не удалось сгенерировать отчет');
     }
+  }
+
+  async findAll() {
+    return this.userModel.findAll({
+      where: {
+        role: "curator"
+      }
+    })
+  }
+  
+  async findOne(id) {
+    const item = await this.userModel.findByPk(id);
+    if (!item) {
+      throw new NotFoundException(`Student with id ${id} not found`);
+    }
+    return item
+  }
+  async create(dto: CreateCuratorDto) {
+    const hash = await bcrypt.hash(dto.password, 10);
+    try {
+      const user = await this.userModel.create({
+        fullName: dto.fullName,
+        email: dto.email,
+        password: hash,
+        role: "curator",
+        phone: dto.phone,
+      } as any);
+      const { password, ...result } = user.get({ plain: true });
+      return result;
+    } catch (e) {
+      if (e.name === 'SequelizeUniqueConstraintError') {
+        throw new ConflictException('Email или телефон уже заняты');
+      }
+      throw e;
+    }
+  }
+
+  async update(id: number, dto: any) {
+    try {
+      console.log('herefdsfsdfsd')
+      const item: any = await this.findOne(id);
+      console.log('posle')
+      const updated = await item.update(dto as any);
+
+      console.log('upd', updated)
+      return updated
+    } catch (err) {
+      console.log('err', err)
+    }
+  }
+
+  async remove(id: number) {
+    const item: any = await this.findOne(id);
+    await item.destroy();
+    return { deleted: true };
   }
 }

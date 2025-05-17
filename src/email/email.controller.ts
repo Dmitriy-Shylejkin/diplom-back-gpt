@@ -26,12 +26,12 @@ export class EmailController {
   ) {}
 
   @Post('send-group')
-  @Roles('curator')
+  @Roles('curator', 'admin')
   async sendGroup(
     @Body() dto: SendEmailDto,
     @Req() req: AuthRequest,
   ) {
-    console.log(req.user)
+    console.log('dto', dto)
     if (req.user.role === 'curator') {
       const group = await this.service.findGroup(dto.groupId);
       if (!group || group.curatorId !== req.user.userId) {
@@ -47,23 +47,19 @@ export class EmailController {
   }
 
   @Post('send-student')
-  @Roles('curator')
+  @Roles('admin', 'curator')
   async sendToStudent(
     @Body() dto: SendEmailToStudentDto,
     @Req() req: AuthRequest,
   ) {
-    if (req.user.role === 'curator') {
-      const student = await this.studentService.findOne(dto.studentId);
-      if (!student) {
-        throw new NotFoundException(`Student with id ${dto.studentId} not found`);
-      }
-    
+    console.log('herere', dto)
+    const student: any = await this.studentService.findOne(dto.studentId);
+      
     return this.service.sendToStudent(
       student,
       dto.templateKey,
       dto.context,
     );
-    }
   }
 
   @Post('send-curators')

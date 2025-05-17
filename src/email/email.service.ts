@@ -91,6 +91,8 @@ export class EmailService {
       mailSubject = `Напоминание о экзамене: ${context.subject}`;
     }
 
+    console.log('send')
+
     return this.mailer.sendMail({
       to: student.email,
       subject: mailSubject,

@@ -27,7 +27,8 @@ export class StudentController {
 
   @Post()
   @Roles('admin', 'curator')
-  create(@Body() dto: CreateStudentDto, @Req() req: AuthRequest) {
+  create(@Body() dto: any, @Req() req: AuthRequest) {
+    console.log('dto', dto)
     if (
       req.user.role === 'curator' || req.user.role ==='admin'
     ) {
@@ -59,7 +60,7 @@ export class StudentController {
     @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthRequest,
   ) {
-    const student = await this.service.findOne(id);
+    const student: any = await this.service.findOne(id);
     if (
       req.user.role === 'curator' &&
       student.group.curatorId !== req.user.userId
@@ -73,10 +74,12 @@ export class StudentController {
   @Roles('admin', 'curator')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateStudentDto,
+    @Body() dto: any,
     @Req() req: AuthRequest,
   ) {
-    const student = await this.service.findOne(id);
+    console.log('id', id)
+    console.log('dto', dto)
+    const student: any = await this.service.findOne(id);
     if (
       req.user.role === 'curator' &&
       student.group.curatorId !== req.user.userId
@@ -92,7 +95,7 @@ export class StudentController {
     @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthRequest,
   ) {
-    const student = await this.service.findOne(id);
+    const student: any = await this.service.findOne(id);
     if (
       req.user.role === 'curator' &&
       student.group.curatorId !== req.user.userId

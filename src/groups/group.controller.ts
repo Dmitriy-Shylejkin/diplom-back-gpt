@@ -33,9 +33,9 @@ export class GroupController {
   @Roles('admin', 'curator')
   findAll(
     @Req() req, 
-    @Query() query: { programId?: number; curatorId?: number }
+    @Query() query: { programId?: number; }
   ) {
-    return this.svc.findAll(req.user, query.programId, query.curatorId);
+    return this.svc.findAll(req.user, query.programId);
   }
 
   @Get(':id')
