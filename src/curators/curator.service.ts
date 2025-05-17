@@ -8,6 +8,7 @@ import { User } from '../models/user.model';
 import { Group } from '../models/group.model';
 import { Student } from 'src/models/student.model';
 import { Grade } from 'src/models/grade.model';
+import { Subject } from 'src/models/subject.model';
 
 @Injectable()
 export class CuratorService {
@@ -15,6 +16,7 @@ export class CuratorService {
     @InjectModel(User) private readonly userModel: typeof User,
     @InjectModel(Group) private readonly groupModel: typeof Group,
     @InjectModel(Student) private readonly studentModel: typeof Student,
+    @InjectModel(Grade) private readonly gradeModel: typeof Grade,
   ) {}
 
   /**
@@ -81,6 +83,42 @@ export class CuratorService {
       }
 
     })
+    return result;
+  }
+
+  async getAllGradesForStudent(studentId: number) {
+    const student = await this.studentModel.findByPk(studentId, {
+      include: {
+        model: Grade,
+        include: [Subject]
+      }
+    });
+
+    if (!student) {
+      throw new HttpException(
+        `Student with id ${student} not found`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const result = {
+      student: {
+        id: student.id,
+        fullname: student.fullName,
+        email: student.email,
+        phone: student.phone,
+        groupId: student.groupId,
+        characteristic: student.characteristic
+      },
+      grades: student.Grades.map((grade) => {
+        return {
+          id: grade.id,
+          grade: grade.grade,
+          subjectName: grade.subject?.name,
+        }
+      })
+    }
+
     return result;
   }
 }

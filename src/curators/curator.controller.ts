@@ -39,4 +39,12 @@ export class CuratorController {
   ) {
     return this.curatorService.getAllGrades(groupId, subjectId);
   }
+
+  @Get('grades/student/:id')
+  @Roles('admin', 'curator')
+  getAllGradesForStudent(
+    @Param('id', ParseIntPipe) studentId: number
+  ) {
+    return this.curatorService.getAllGradesForStudent(studentId);
+  }
 }

@@ -35,6 +35,14 @@ export class GradeService {
     return this.model.findAll({ include: ['student', 'subject'] });
   }
 
+  async findAllGradeForStudent(studentId: number) {
+    const grades = this.studentModel.findByPk(studentId, {
+      include: [Grade]
+    })
+
+    return grades;
+  }
+
   async findOne(id: number) {
     const item = await this.model.findByPk(id, {
       include: ['student', 'subject'],
@@ -46,6 +54,7 @@ export class GradeService {
   }
 
   async update(id: number, dto: UpdateGradeDto) {
+    console.log(dto)
     const item = await this.findOne(id);
     return item.update(dto as any);
   }

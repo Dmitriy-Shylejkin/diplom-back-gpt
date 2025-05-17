@@ -20,7 +20,9 @@ export class GroupService {
       return this.groupRepo.findAll({
       });
     } else if (user.role === "curator") {
-      const options: any = { curatorId: user.userId };
+      const options: any = {};
+
+      options.where = { curatorId: user.userId };
 
       if (programId) {
         options.where = { ...options.where, programId };
