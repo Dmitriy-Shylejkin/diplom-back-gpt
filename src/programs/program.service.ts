@@ -83,7 +83,7 @@ export class ProgramService {
     };
 
     if (id) {
-      options.where = { id };
+      options.where = { facultyId: id };
     }
 
     return this.programModel.findAll(options);
@@ -130,5 +130,13 @@ export class ProgramService {
     const program = await this.findOne(id);
     await program.destroy();
     return { deleted: true };
+  }
+
+  async findAllByFaculty(facultyId: any) {
+    return this.programModel.findAll({
+      where: {
+        facultyId: facultyId
+      }
+    });
   }
 }

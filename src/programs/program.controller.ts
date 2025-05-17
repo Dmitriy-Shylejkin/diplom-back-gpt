@@ -28,8 +28,6 @@ export class ProgramController {
     private readonly programSubjectModel: typeof ProgramSubject,
   ) {}
 
-  
-
   @Post()
   @Roles('admin')
   create(@Body() dto: CreateProgramDto) {
@@ -38,8 +36,15 @@ export class ProgramController {
 
   @Get()
   @Roles('admin', 'curator')
-  findAll(@Query('id') id?: number) {
+  findAll(@Query('facultyId') id?: number) {
     return this.service.findAll(id);
+  }
+
+  @Get('/faculty/:id')
+  @Roles('admin', 'curator')
+  findAllByFaculty(@Param('id') id?: number) {
+    console.log('here', id)
+    return this.service.findAllByFaculty(id);
   }
 
   @Get(':id')
