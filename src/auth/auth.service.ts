@@ -45,7 +45,7 @@ export class AuthService {
     if (!valid) throw new UnauthorizedException('Неверные учётные данные');
 
     const payload = { userId: user.id, email: user.email, role: user.role };
-    return { access_token: this.jwtService.sign(payload) };
+    return { access_token: this.jwtService.sign(payload), role: user.role };
   }
 
   // Профиль

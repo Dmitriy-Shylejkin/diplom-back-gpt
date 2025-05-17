@@ -168,7 +168,15 @@ export class EmailService {
     } else if (templateKey === 'DEADLINE_REMINDER') {
       mailSubject = `Напоминание о дедлайне: ${context.subject}`;
     }
-
+    console.log('send')
+    console.log('аsendCURATOR', {
+      to: curator.email,
+      subject: mailSubject,
+      html: templateFn(
+        context.subject,
+        context?.datetime,
+      )
+    })
     return this.mailer.sendMail({
       to: curator.email,
       subject: mailSubject,

@@ -10,7 +10,6 @@ export class SendEmailToCuratorsDto {
   @IsIn(EmailTemplateKeys)
   templateKey: EmailTemplateKey;
 
-
   @IsObject()
   @ValidateNested()
   @Type(() => ContextDto)
@@ -24,7 +23,6 @@ export class SendEmailToCuratorByIdDto {
   @IsString()
   @IsIn(EmailTemplateKeys)
   templateKey: EmailTemplateKey;
-
 
   @IsObject()
   @ValidateNested()

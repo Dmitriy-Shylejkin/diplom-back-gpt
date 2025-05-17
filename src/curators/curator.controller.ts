@@ -85,6 +85,12 @@ export class CuratorController {
     return this.curatorService.findAll()
   }
 
+  @Get('/all-curators/:id')
+  @Roles('admin')
+  getOne(@Param('id', ParseIntPipe) curatorId: number) {
+    return this.curatorService.findOneWithGroup(curatorId)
+  }
+
   @Put(':id')
   @Roles('admin', 'curator')
   async update(

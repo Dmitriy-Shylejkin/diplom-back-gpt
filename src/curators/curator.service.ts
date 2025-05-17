@@ -350,15 +350,10 @@ export class CuratorService {
 
   async update(id: number, dto: any) {
     try {
-      console.log('herefdsfsdfsd')
       const item: any = await this.findOne(id);
-      console.log('posle')
       const updated = await item.update(dto as any);
-
-      console.log('upd', updated)
       return updated
     } catch (err) {
-      console.log('err', err)
     }
   }
 
@@ -366,5 +361,25 @@ export class CuratorService {
     const item: any = await this.findOne(id);
     await item.destroy();
     return { deleted: true };
+  }
+
+  async findOneWithGroup(curatorId) {
+    const user = await this.userModel.findOne({
+      where: {
+        role: "curator",
+        id: curatorId
+      },
+    })
+
+    const groups = await this.groupModel.findAll({
+      where: {
+        curatorId
+      }
+    })
+
+    const obj = JSON.parse(JSON.stringify(user))
+    obj.groups = groups
+
+    return obj
   }
 }

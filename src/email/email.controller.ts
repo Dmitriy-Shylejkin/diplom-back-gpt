@@ -54,7 +54,7 @@ export class EmailController {
   ) {
     console.log('herere', dto)
     const student: any = await this.studentService.findOne(dto.studentId);
-      
+
     return this.service.sendToStudent(
       student,
       dto.templateKey,
@@ -83,13 +83,10 @@ export class EmailController {
     @Body() dto: SendEmailToCuratorByIdDto,
     @Req() req: AuthRequest,
   ) {
-    if (req.user.role === 'admin') {
-    
     return this.service.sendToCuratorById(
       dto.curatorId,
       dto.templateKey,
       dto.context,
     );
-    }
   }
 }
