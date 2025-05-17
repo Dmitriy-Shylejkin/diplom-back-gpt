@@ -7,6 +7,7 @@ import {
   ParseArrayPipe,
   UseGuards,
   Get,
+  Res
 } from '@nestjs/common';
 import { CuratorService } from './curator.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
@@ -17,6 +18,25 @@ import { Roles } from '../auth/roles.decorator';
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CuratorController {
   constructor(private readonly curatorService: CuratorService) {}
+
+  @Get('report/:id')
+  @Roles('admin', 'curator')
+  async generateReport(
+    @Param('id') studentId: number,
+    @Res() res: Response,
+  ) {
+    await this.curatorService.generateStudentReport(studentId, res);
+  }
+
+  @Get('group-report/:groupId/:subjectId')
+  @Roles('admin', 'curator')
+  async generateGroupReport(
+  @Param('groupId') groupId: number,
+  @Param('subjectId') subjectId: number,
+  @Res() res: Response,
+  ) {
+  await this.curatorService.generateGroupSubjectReport(groupId, subjectId, res);
+  }
 
   @Post(':id/groups')
   @Roles('admin')
