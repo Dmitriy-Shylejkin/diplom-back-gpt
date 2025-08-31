@@ -35,6 +35,30 @@ export class GradeService {
     return this.model.findAll({ include: ['student', 'subject'] });
   }
 
+  async findAllGradeForStudent(studentId: number) {
+    const student: any = await this.studentModel.findByPk(studentId, {
+      include: [Grade]
+    });
+
+    const allSubjects = await this.subjectModel.findAll();
+
+    // Преобразуем массив оценок, добавляя subjectName
+    const gradesWithSubjectName = student.Grades.map(grade => {
+      const subject = allSubjects.find(subject => subject.id === grade.subjectId);
+      return {
+        ...grade.toJSON(), // Преобразуем экземпляр модели в обычный объект
+        subjectName: subject ? subject.name : null
+      };
+    });
+
+    const newObj = JSON.parse(JSON.stringify(student))
+
+    newObj.Grades = gradesWithSubjectName
+
+    return newObj;
+}
+
+
   async findOne(id: number) {
     const item = await this.model.findByPk(id, {
       include: ['student', 'subject'],
@@ -46,6 +70,7 @@ export class GradeService {
   }
 
   async update(id: number, dto: UpdateGradeDto) {
+    console.log(dto)
     const item = await this.findOne(id);
     return item.update(dto as any);
   }

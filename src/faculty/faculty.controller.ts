@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   UseGuards,
   Req,
+  HttpCode,
 } from '@nestjs/common';
 import { FacultyService } from './faculty.service';
 import { CreateFacultyDto } from './dto/create-faculty.dto';
@@ -31,8 +32,9 @@ export class FacultyController {
   }
 
   @Get()
+  @HttpCode(200)
   @Roles('admin', 'curator')
-  findAll() {
+  findAll(@Req() req) {
     return this.service.findAll();
   }
 

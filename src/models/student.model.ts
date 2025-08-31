@@ -13,21 +13,24 @@ import { Grade } from './grade.model';
 @Table({ tableName: 'students' })
 export class Student extends Model<Student> {
   @Column({ type: DataType.STRING, allowNull: false })
-  fullName: string;
+  declare fullName: string;
 
   @Column({ type: DataType.STRING, allowNull: false, unique: true })
-  email: string;
+  declare email: string;
+
+  @Column({ type: DataType.STRING, allowNull: false, unique: true })
+  declare phone: string;
 
   @ForeignKey(() => Group)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  groupId: number;
+  declare groupId: number;
 
   @BelongsTo(() => Group)
-  group: Group;
+  declare group: Group;
 
   @HasMany(() => Grade)
-  Grades: Grade[];
+  declare Grades: Grade[];
 
   @Column({ type: DataType.TEXT, allowNull: true })
-  characteristic: string;
+  declare characteristic: string;
 }

@@ -1,21 +1,24 @@
-import { IsNotEmpty, IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsNumber, IsArray, IsInt } from 'class-validator';
+import { IsArrayOfIds } from '../decorators/is-array-of-ids.decorator';
 
 export class CreateProgramDto {
-  [key: string | symbol]: any;
-
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   name: string;
 
-  @IsOptional()
   @IsString()
-  code?: string;
-
-  @IsOptional()
-  @IsString()
-  shortName?: string;
-
   @IsNotEmpty()
-  @IsNumber()
+  code: string;
+
+  @IsString()
+  @IsNotEmpty()
+  shortName: string;
+
+  @IsInt()
+  @IsNotEmpty()
   facultyId: number;
+
+  @IsArrayOfIds()
+  @IsOptional()
+  subjectIds?: number[];
 }

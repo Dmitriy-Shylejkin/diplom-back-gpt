@@ -19,7 +19,7 @@ export class Grade extends Model<Grade, { studentId: number; subjectId: number; 
   declare id: number;
 
   @Column({ type: DataType.STRING, allowNull: false })
-  declare value: string;
+  declare grade: string;
 
   @ForeignKey(() => Student)
   @Column({ type: DataType.INTEGER, allowNull: false })

@@ -25,6 +25,7 @@ export class AuthController {
   // логин — без guard!
   @Post('login')
   login(@Body() dto: LoginDto) {
+    console.log('herer', dto)
     return this.svc.login(dto);
   }
 

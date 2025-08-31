@@ -1,7 +1,17 @@
-import { IsNumber, IsString, IsObject, IsIn } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNumber, IsString, IsObject, IsIn, IsOptional, ValidateNested} from 'class-validator';
 
 export const EmailTemplateKeys = ['TEST_REMINDER', 'EXAM_REMINDER'] as const;
 export type EmailTemplateKey = typeof EmailTemplateKeys[number];
+
+export class ContextDto {
+  @IsString()
+  subject: string;
+
+  @IsOptional()
+  @IsString()
+  datetime?: string;
+}
 
 export class SendEmailDto {
   @IsNumber()
@@ -12,5 +22,7 @@ export class SendEmailDto {
   templateKey: EmailTemplateKey;
 
   @IsObject()
-  context: Record<string, any>;
+  @ValidateNested()
+  @Type(() => ContextDto)
+  context: ContextDto;
 }

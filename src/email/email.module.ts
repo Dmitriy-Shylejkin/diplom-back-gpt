@@ -9,38 +9,16 @@ import { EmailService } from './email.service';
 import { EmailController } from './email.controller';
 import { Student } from '../models/student.model';
 import { Group } from '../models/group.model';
+import { StudentService } from 'src/students/student.service';
+import { User } from 'src/models/user.model';
 
 @Module({
   imports: [
     ConfigModule,
-    SequelizeModule.forFeature([Student, Group]),
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (config: ConfigService) => ({
-        transport: {
-          host: config.get<string>('SMTP_HOST'),
-          port: config.get<number>('SMTP_PORT'),
-          secure: false,
-          auth: {
-            user: config.get<string>('SMTP_USER'),
-            pass: config.get<string>('SMTP_PASS'),
-          },
-        },
-        defaults: {
-          from: `"No Reply" <${config.get<string>('SMTP_USER')}>`,
-        },
-        template: {
-          dir: join(__dirname, 'templates'),
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
-          },
-        },
-      }),
-      inject: [ConfigService],
-    }),
+    SequelizeModule.forFeature([Student, Group, User]),
+    
   ],
   controllers: [EmailController],
-  providers: [EmailService],
+  providers: [EmailService, StudentService],
 })
 export class EmailModule {}

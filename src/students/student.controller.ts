@@ -10,6 +10,7 @@ import {
   Req,
   UseGuards,
   ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -26,26 +27,31 @@ export class StudentController {
 
   @Post()
   @Roles('admin', 'curator')
-  create(@Body() dto: CreateStudentDto, @Req() req: AuthRequest) {
+  create(@Body() dto: any, @Req() req: AuthRequest) {
+    console.log('dto', dto)
     if (
-      req.user.role === 'curator' &&
-      dto.groupId !== req.user.id
+      req.user.role === 'curator' || req.user.role ==='admin'
     ) {
+      return this.service.create(dto);
+
+    } else {
       throw new ForbiddenException(
         'Можно добавлять студентов только в свои группы',
       );
     }
-    return this.service.create(dto);
   }
 
   @Get()
   @Roles('admin', 'curator')
-  findAll(@Req() req: AuthRequest) {
+  findAll(
+    @Req() req: AuthRequest,
+    @Query('groupId') groupId?: number
+  ) {
     if (req.user.role === 'admin') {
-      return this.service.findAll();
+      return this.service.findAll(groupId);
     }
     // curator: все студенты его групп
-    return this.service.findByCurator(req.user.id);
+    return this.service.findByCurator(req.user.userId);
   }
 
   @Get(':id')
@@ -54,10 +60,10 @@ export class StudentController {
     @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthRequest,
   ) {
-    const student = await this.service.findOne(id);
+    const student: any = await this.service.findOne(id);
     if (
       req.user.role === 'curator' &&
-      student.group.curatorId !== req.user.id
+      student.group.curatorId !== req.user.userId
     ) {
       throw new ForbiddenException('Доступ запрещён');
     }
@@ -68,13 +74,15 @@ export class StudentController {
   @Roles('admin', 'curator')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateStudentDto,
+    @Body() dto: any,
     @Req() req: AuthRequest,
   ) {
-    const student = await this.service.findOne(id);
+    console.log('id', id)
+    console.log('dto', dto)
+    const student: any = await this.service.findOne(id);
     if (
       req.user.role === 'curator' &&
-      student.group.curatorId !== req.user.id
+      student.group.curatorId !== req.user.userId
     ) {
       throw new ForbiddenException('Доступ запрещён');
     }
@@ -87,10 +95,10 @@ export class StudentController {
     @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthRequest,
   ) {
-    const student = await this.service.findOne(id);
+    const student: any = await this.service.findOne(id);
     if (
       req.user.role === 'curator' &&
-      student.group.curatorId !== req.user.id
+      student.group.curatorId !== req.user.userId
     ) {
       throw new ForbiddenException('Доступ запрещён');
     }

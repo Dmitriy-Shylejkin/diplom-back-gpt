@@ -33,6 +33,14 @@ export class GradeController {
     return this.service.findAll();
   }
 
+  @Get('student/:id')
+  @Roles('admin', 'curator')
+  findAllGradeForStudent(
+    @Param('id', ParseIntPipe) studentId: number
+  ) {
+    return this.service.findAllGradeForStudent(studentId);
+  }
+
   @Get(':id')
   @Roles('admin', 'curator')
   findOne(@Param('id', ParseIntPipe) id: number) {

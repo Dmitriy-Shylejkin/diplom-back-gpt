@@ -12,6 +12,7 @@ import { Program } from './program.model';
 import { User } from './user.model';
 // <-- вот этот импорт
 import { CreateGroupDto } from '../groups/dto/create-group.dto';
+import { Subject } from './subject.model';
 
 @Table({
   tableName: 'groups',
